@@ -8,7 +8,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       position: relative;
-      background-image: url('miao.webp');
+      background-image: url('miao.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -45,44 +45,39 @@
       width: 100%;
       position: relative;
     }
-    /* 左上角精灵列表按钮 - 改为带文字 */
+    /* 左上角精灵列表按钮 - 仅文字，适配手机 */
     .btn-petlist {
       position: absolute;
-      top: 14px;
-      left: 14px;
+      top: 12px;
+      left: 12px;
       border-radius: 20px;
       border: 1.5px solid #f8bbd0;
       background: #ffffff;
       color: #f48fb1;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px 6px 12px;
+      padding: 4px 12px;
       transition: all 0.15s;
       z-index: 10;
-      line-height: 1;
+      line-height: 1.4;
       white-space: nowrap;
     }
     .btn-petlist:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
     .btn-petlist:active { transform: scale(0.96); }
-    .btn-petlist .icon { font-size: 18px; }
-    .btn-petlist .text { font-size: 13px; }
 
-    /* 帮助按钮右上角保持不变 */
+    /* 帮助按钮右上角 */
     .btn-help {
       position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 36px;
-      height: 36px;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       border: 1.5px solid #f8bbd0;
       background: #ffffff;
       color: #f48fb1;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -94,21 +89,22 @@
     }
     .btn-help:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
 
+    /* 标题 → 灰色 */
     .title {
       text-align: center;
       font-size: 20px;
       font-weight: 600;
-      color: #f06292;
+      color: #555555; /* 灰色 */
       margin-bottom: 8px;
       letter-spacing: 1px;
-      /* 为左右按钮留出空间 */
-      margin-left: 20px;
-      margin-right: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
     }
+    /* 副标题 → 灰色 */
     .subtitle {
       text-align: center;
       font-size: 12px;
-      color: #f8bbd0;
+      color: #999999; /* 灰色 */
       margin-bottom: 20px;
       letter-spacing: 0.5px;
     }
@@ -140,7 +136,7 @@
       cursor: pointer; display: flex; align-items: center;
       justify-content: center; transition: all 0.15s; line-height: 1;
     }
-    .btn-sm:hover { background: #fce4ec; border-color: #f06292; }
+    .btn-sm:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
     .btn-sm:active { transform: scale(0.92); }
     .counter-value {
       font-size: 22px; font-weight: 700; color: #f48fb1;
@@ -218,7 +214,14 @@
       color: #ec407a; cursor: pointer; transition: all 0.2s;
     }
     .btn-modal-clear:hover { background: #f8bbd0; color: #fff; }
-    .footer-hint { text-align: center; margin-top: 18px; font-size: 12px; color: #f8bbd0; }
+
+    /* 底部提示 → 灰色 */
+    .footer-hint {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      color: #999999;
+    }
 
     .help-modal-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -253,15 +256,50 @@
       line-height: 1;
     }
     .help-modal-close:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
-    .help-modal-title { font-size: 20px; font-weight: 700; color: #f06292; margin-bottom: 20px; text-align: center; }
-    .help-section { text-align: left; margin-bottom: 18px; }
-    .help-section h4 { font-size: 14px; font-weight: 600; color: #ec407a; margin-bottom: 6px; }
-    .help-section p { font-size: 13px; color: #d81b60; line-height: 1.7; }
-    .help-section .note { color: #f48fb1; font-size: 12px; margin-top: 2px; }
+    /* 帮助弹窗内所有文字 → 灰色 */
+    .help-modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #555555;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .help-section h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555555;
+      margin-bottom: 6px;
+    }
+    .help-section p {
+      font-size: 13px;
+      color: #555555;
+      line-height: 1.7;
+    }
+    .help-section .note {
+      color: #888888;
+      font-size: 12px;
+      margin-top: 2px;
+    }
     .help-divider { border: none; border-top: 1px solid #f8bbd0; margin: 16px 0; }
-    .help-tips { background: #fff5f7; border-radius: 12px; padding: 14px 16px; text-align: left; }
-    .help-tips h4 { font-size: 13px; font-weight: 600; color: #ec407a; margin-bottom: 8px; }
-    .help-tips li { font-size: 12px; color: #d81b60; line-height: 1.8; padding-left: 4px; list-style: none; }
+    .help-tips {
+      background: #fff5f7;
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+    }
+    .help-tips h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555555;
+      margin-bottom: 8px;
+    }
+    .help-tips li {
+      font-size: 12px;
+      color: #555555;
+      line-height: 1.8;
+      padding-left: 4px;
+      list-style: none;
+    }
     .help-tips li::before { content: "💡 "; }
     .pop { animation: popAnim 0.2s ease; }
     @keyframes popAnim {
@@ -270,7 +308,7 @@
       100% { transform: scale(1); }
     }
 
-    /* 侧边栏样式 */
+    /* 侧边栏样式 - 粉色系 */
     .sidebar-overlay {
       position: fixed;
       top: 0;
@@ -364,11 +402,8 @@
 </head>
 <body>
 <div class="card-wrapper">
-  <!-- 左上角精灵列表按钮（带文字） -->
-  <button class="btn-petlist" id="btnPetList" title="精灵列表">
-    <span class="icon">☰</span>
-    <span class="text">选择精灵</span>
-  </button>
+  <!-- 左上角精灵列表按钮（仅文字） -->
+  <button class="btn-petlist" id="btnPetList" title="精灵列表">选择精灵</button>
   <button class="btn-help" id="btnHelp" title="使用说明">?</button>
   <div class="card">
     <div class="title">洛克王国异色统计</div>
@@ -484,7 +519,7 @@
 </div>
 
 <script>
-  // ---------- 精灵列表 (固定，小夜置顶，其余按拼音排序) ----------
+  // ---------- 精灵列表 ----------
   const rawPets = [
     "小夜", "恶魔叮", "菊花梨", "幽影树", "嘟嘟煲", "小独角兽", "灵狐", "公平鸽",
     "绒绒", "犀角鸟", "火红尾", "小雪人", "爆焰仔", "猴麦仔", "加油海葵", "小丑豆豆",
@@ -494,7 +529,7 @@
   otherPets.sort((a,b) => a.localeCompare(b, 'zh'));
   const PETS = ["小夜", ...otherPets];
 
-  // ---------- 数据存储 ----------
+  // ---------- 数据 ----------
   let currentPet = "小夜";
   let petsData = {};
   let currentData = null;
@@ -528,7 +563,6 @@
         });
       } catch(e) { createDefaultData(); }
     } else {
-      // 兼容旧单精灵数据
       const oldPity = parseInt(localStorage.getItem('pity') || '0');
       const oldOther = parseInt(localStorage.getItem('otherEncounters') || '0');
       const oldOriginal = parseInt(localStorage.getItem('capturedOriginals') || '0');
