@@ -20,7 +20,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       padding: 20px;
     }
-    /* 半透明遮罩层，让背景变暗，突出白色卡片 */
     body::before {
       content: "";
       position: absolute;
@@ -46,29 +45,33 @@
       width: 100%;
       position: relative;
     }
-    /* 左上角精灵列表按钮 */
+    /* 左上角精灵列表按钮 - 改为带文字 */
     .btn-petlist {
       position: absolute;
       top: 14px;
       left: 14px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+      border-radius: 20px;
       border: 1.5px solid #f8bbd0;
       background: #ffffff;
       color: #f48fb1;
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 6px;
+      padding: 6px 14px 6px 12px;
       transition: all 0.15s;
       z-index: 10;
       line-height: 1;
+      white-space: nowrap;
     }
     .btn-petlist:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
-    /* 帮助按钮右上角 */
+    .btn-petlist:active { transform: scale(0.96); }
+    .btn-petlist .icon { font-size: 18px; }
+    .btn-petlist .text { font-size: 13px; }
+
+    /* 帮助按钮右上角保持不变 */
     .btn-help {
       position: absolute;
       top: 14px;
@@ -90,6 +93,7 @@
       line-height: 1;
     }
     .btn-help:hover { background: #fce4ec; border-color: #f06292; color: #f06292; }
+
     .title {
       text-align: center;
       font-size: 20px;
@@ -97,6 +101,9 @@
       color: #f06292;
       margin-bottom: 8px;
       letter-spacing: 1px;
+      /* 为左右按钮留出空间 */
+      margin-left: 20px;
+      margin-right: 20px;
     }
     .subtitle {
       text-align: center;
@@ -105,7 +112,6 @@
       margin-bottom: 20px;
       letter-spacing: 0.5px;
     }
-    /* 当前捕捉目标提示条 */
     .current-pet-bar {
       background: #fce4ec;
       border-radius: 40px;
@@ -264,7 +270,7 @@
       100% { transform: scale(1); }
     }
 
-    /* ---------- 侧边栏样式 ---------- */
+    /* 侧边栏样式 */
     .sidebar-overlay {
       position: fixed;
       top: 0;
@@ -358,12 +364,15 @@
 </head>
 <body>
 <div class="card-wrapper">
-  <button class="btn-petlist" id="btnPetList" title="精灵列表">☰</button>
+  <!-- 左上角精灵列表按钮（带文字） -->
+  <button class="btn-petlist" id="btnPetList" title="精灵列表">
+    <span class="icon">☰</span>
+    <span class="text">选择精灵</span>
+  </button>
   <button class="btn-help" id="btnHelp" title="使用说明">?</button>
   <div class="card">
     <div class="title">洛克王国异色统计</div>
     <div class="subtitle">by 小夜妈咪</div>
-    <!-- 正在捕捉提示条 -->
     <div class="current-pet-bar" id="currentPetBar">💡 正在捕捉：小夜</div>
     <div class="counter-row">
       <span class="counter-label">保底进度</span>
@@ -405,7 +414,7 @@
   </div>
 </div>
 
-<!-- 说明书弹窗 (与原来一致) -->
+<!-- 说明书弹窗 -->
 <div class="help-modal-overlay" id="helpModal">
   <div class="help-modal-card">
     <button class="help-modal-close" id="btnHelpClose">✕</button>
@@ -481,38 +490,29 @@
     "绒绒", "犀角鸟", "火红尾", "小雪人", "爆焰仔", "猴麦仔", "加油海葵", "小丑豆豆",
     "烟花团", "咕咕帽", "炫光迪迪", "小鼓象", "牵线木偶"
   ];
-  // 排序：小夜单独置顶，其余按拼音排序
   const otherPets = rawPets.filter(p => p !== "小夜");
   otherPets.sort((a,b) => a.localeCompare(b, 'zh'));
   const PETS = ["小夜", ...otherPets];
 
-  // ---------- 数据存储结构 ----------
-  let currentPet = "小夜";           // 当前选中的精灵名字
-  let petsData = {};                 // { "小夜": { pity, otherEncounters, capturedOriginals }, ... }
-  let currentData = null;            // 指向当前精灵的数据对象
+  // ---------- 数据存储 ----------
+  let currentPet = "小夜";
+  let petsData = {};
+  let currentData = null;
 
-  // DOM 元素
   const valPity = document.getElementById('val-pity');
   const valOther = document.getElementById('val-otherEncounters');
   const valOriginal = document.getElementById('val-capturedOriginals');
   const valTotal = document.getElementById('val-totalCaptures');
   const currentPetBar = document.getElementById('currentPetBar');
 
-  // 辅助函数
   function computeTotal(data) {
     return data.pity + data.otherEncounters + data.capturedOriginals;
   }
 
-  // 保存全部数据到 localStorage
   function saveFullData() {
-    const store = {
-      currentPet: currentPet,
-      petsData: petsData
-    };
-    localStorage.setItem('petStatsMulti', JSON.stringify(store));
+    localStorage.setItem('petStatsMulti', JSON.stringify({ currentPet, petsData }));
   }
 
-  // 初始化或加载数据
   function initData() {
     const stored = localStorage.getItem('petStatsMulti');
     if (stored) {
@@ -520,19 +520,15 @@
         const obj = JSON.parse(stored);
         currentPet = obj.currentPet || "小夜";
         petsData = obj.petsData || {};
-        // 确保所有精灵都有初始数据
         for (let pet of PETS) {
-          if (!petsData[pet]) {
-            petsData[pet] = { pity: 0, otherEncounters: 0, capturedOriginals: 0 };
-          }
+          if (!petsData[pet]) petsData[pet] = { pity: 0, otherEncounters: 0, capturedOriginals: 0 };
         }
-        // 清理多余键
         Object.keys(petsData).forEach(k => {
           if (!PETS.includes(k)) delete petsData[k];
         });
       } catch(e) { createDefaultData(); }
     } else {
-      // 兼容旧版数据 (单精灵)
+      // 兼容旧单精灵数据
       const oldPity = parseInt(localStorage.getItem('pity') || '0');
       const oldOther = parseInt(localStorage.getItem('otherEncounters') || '0');
       const oldOriginal = parseInt(localStorage.getItem('capturedOriginals') || '0');
@@ -541,10 +537,8 @@
         petsData["小夜"] = { pity: oldPity, otherEncounters: oldOther, capturedOriginals: oldOriginal };
         saveFullData();
       }
-      // 清除旧 key 避免干扰
       ['pity','otherEncounters','capturedOriginals','totalCaptures'].forEach(k => localStorage.removeItem(k));
     }
-    // 确保当前精灵在列表中
     if (!PETS.includes(currentPet)) currentPet = "小夜";
     currentData = petsData[currentPet];
     updateUIFromCurrentData();
@@ -554,24 +548,18 @@
 
   function createDefaultData() {
     petsData = {};
-    for (let pet of PETS) {
-      petsData[pet] = { pity: 0, otherEncounters: 0, capturedOriginals: 0 };
-    }
-    currentPet = "小夜";
+    for (let pet of PETS) petsData[pet] = { pity: 0, otherEncounters: 0, capturedOriginals: 0 };
   }
 
-  // 刷新主界面数字 (从 currentData 读取)
   function updateUIFromCurrentData() {
     if (!currentData) return;
     valPity.textContent = currentData.pity;
     valOther.textContent = currentData.otherEncounters;
     valOriginal.textContent = currentData.capturedOriginals;
-    const total = computeTotal(currentData);
-    valTotal.textContent = total;
+    valTotal.textContent = computeTotal(currentData);
     currentPetBar.innerHTML = `💡 正在捕捉：${currentPet}`;
   }
 
-  // 刷新侧边栏高亮
   function renderPetList() {
     const grid = document.getElementById('petGrid');
     grid.innerHTML = '';
@@ -588,7 +576,6 @@
     });
   }
 
-  // 切换精灵
   function switchToPet(petName) {
     if (petName === currentPet) return;
     currentPet = petName;
@@ -598,7 +585,6 @@
     saveFullData();
   }
 
-  // 修改当前精灵的某个字段 (value 为数字)
   function setCurrentField(field, value) {
     if (!currentData) return;
     let newVal = Math.max(0, parseInt(value) || 0);
@@ -606,7 +592,6 @@
     currentData[field] = newVal;
     updateUIFromCurrentData();
     saveFullData();
-    // 动画
     const elMap = { pity: valPity, otherEncounters: valOther, capturedOriginals: valOriginal };
     if (elMap[field]) {
       elMap[field].classList.add('pop');
@@ -623,19 +608,18 @@
     setCurrentField(field, newVal);
   }
 
-  // ---------- 绑定 UI 事件 ----------
+  // ---------- 绑定事件 ----------
   function bindGlobalEvents() {
-    // +1 奇遇等按钮
     document.getElementById('btnQiyu').addEventListener('click', () => incCurrentField('pity', 1));
     document.getElementById('btnOther').addEventListener('click', () => incCurrentField('otherEncounters', 1));
     document.getElementById('btnOriginal').addEventListener('click', () => incCurrentField('capturedOriginals', 1));
-    // 加减按钮
+
     document.querySelectorAll('.btn-plus').forEach(btn => {
       btn.removeEventListener('click', window._plusHandler);
       const key = btn.dataset.key;
       const handler = () => incCurrentField(key, 1);
       btn.addEventListener('click', handler);
-      window._plusHandler = handler; // 避免重复，但没关系
+      window._plusHandler = handler;
     });
     document.querySelectorAll('.btn-minus').forEach(btn => {
       const key = btn.dataset.key;
@@ -644,7 +628,7 @@
       btn.addEventListener('click', handler);
       window._minusHandler = handler;
     });
-    // 点击数字编辑
+
     document.querySelectorAll('.counter-value').forEach(el => {
       el.removeEventListener('click', window._editHandler);
       const key = el.dataset.key;
@@ -673,23 +657,20 @@
     });
   }
 
-  // 结算弹窗逻辑
-  let modal = document.getElementById('modal');
-  let btnShiny = document.getElementById('btnShiny');
-  let modalTotal = document.getElementById('modalTotal');
-  let modalPity = document.getElementById('modalPity');
-  let btnBack = document.getElementById('btnBack');
-  let btnClear = document.getElementById('btnClear');
+  // 结算弹窗
+  const modal = document.getElementById('modal');
+  const btnShiny = document.getElementById('btnShiny');
+  const modalTotal = document.getElementById('modalTotal');
+  const modalPity = document.getElementById('modalPity');
+  const btnBack = document.getElementById('btnBack');
+  const btnClear = document.getElementById('btnClear');
   function refreshModal() {
     if (currentData) {
       modalTotal.textContent = computeTotal(currentData);
       modalPity.textContent = currentData.pity;
     }
   }
-  btnShiny.addEventListener('click', () => {
-    refreshModal();
-    modal.classList.add('show');
-  });
+  btnShiny.addEventListener('click', () => { refreshModal(); modal.classList.add('show'); });
   btnBack.addEventListener('click', () => modal.classList.remove('show'));
   btnClear.addEventListener('click', () => {
     if (currentData) {
@@ -703,22 +684,21 @@
   });
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
 
-  // 说明书弹窗 (保留原有逻辑，并增加关闭时不影响侧边栏)
-  let helpModal = document.getElementById('helpModal');
-  let btnHelp = document.getElementById('btnHelp');
-  let btnHelpClose = document.getElementById('btnHelpClose');
+  // 说明书弹窗
+  const helpModal = document.getElementById('helpModal');
+  const btnHelp = document.getElementById('btnHelp');
+  const btnHelpClose = document.getElementById('btnHelpClose');
   btnHelp.addEventListener('click', () => helpModal.classList.add('show'));
   btnHelpClose.addEventListener('click', () => helpModal.classList.remove('show'));
   helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
 
-  // ---------- 侧边栏逻辑 ----------
+  // 侧边栏
   const sidebarOverlay = document.getElementById('sidebarOverlay');
   const sidebar = document.getElementById('sidebar');
   const btnPetList = document.getElementById('btnPetList');
   const sidebarClose = document.getElementById('sidebarClose');
 
   function openSidebar() {
-    // 如果帮助弹窗打开，先关闭它
     if (helpModal.classList.contains('show')) helpModal.classList.remove('show');
     sidebarOverlay.classList.add('active');
     sidebar.classList.add('active');
@@ -732,26 +712,11 @@
   sidebarOverlay.addEventListener('click', (e) => {
     if (e.target === sidebarOverlay) closeSidebar();
   });
-  // 重绘侧边栏内容 (数据变化时重新渲染)
-  function rerenderSidebar() {
-    renderPetList();
-  }
 
-  // 扩展保存时同时刷新侧边栏高亮
-  const origSave = saveFullData;
-  window.saveFullData = saveFullData;
-  function patchedSave() {
-    origSave();
-    rerenderSidebar();
-  }
-  saveFullData = patchedSave;
-  window.saveFullData = saveFullData;
-
-  // 最终启动
+  // 启动
   initData();
   bindGlobalEvents();
   renderPetList();
-  // 确保侧边栏首次渲染后高亮正确
 </script>
 </body>
 </html>
